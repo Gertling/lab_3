@@ -62,7 +62,7 @@ void labwork( void )
   }
   else
   {
-    //*portegen = *portegen & 0xffffff00;
+    *portegen = *portegen & 0xffffff00;
     num = 0;
   }
 
@@ -70,15 +70,15 @@ void labwork( void )
   {
     if(getbtns() & 0x1)
     {
-      mytime = (mytime & 0xff0f) | getsw() << 4;
+      mytime = (mytime & 0x0ff0f) | getsw() << 4;
     }
     if(getbtns() & 0x2)
     {
-      mytime = (mytime & 0xf0ff) | getsw() << 8;
+      mytime = (mytime & 0x0f0ff) | getsw() << 8;
     }
     if(getbtns() & 0x4)
     {
-      mytime = (mytime & 0x0fff) | getsw() << 12;
+      mytime = (mytime & 0x00fff) | getsw() << 12;
     }
     
   }
