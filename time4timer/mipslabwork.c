@@ -61,20 +61,21 @@ void timer(void)
 int num = 0x000000;
 
 /* This function is called repetitively from the main program */
+int timeoutcount = 0;
 void labwork(void)
 {
-  int counter = 0;
+  
   // delay( 1000 );
   int i = 0;
 
   if (IFS(0) & 0x100)
   {
-    static counter2 = 0;
+    
     IFS(0) = 0;
     TMR2 = 0;
-    if(counter2 == 10)
+    if(timeoutcount == 10)
     {
-      counter2 = 0;
+      timeoutcount = 0;
     time2string(textstring, mytime);
     display_string(3, textstring);
     display_update();
@@ -90,7 +91,7 @@ void labwork(void)
       num = 0;
     }
     }
-    counter2++;
+    timeoutcount++;
   }
 
   if (getbtns())

@@ -18,25 +18,25 @@
 #include "mipslab.h" /* Declatations for these labs */
 
 int prime = 1234567;
-int timeoutcount = 0;
 
 volatile int *trisegen = (volatile int *)0xbf886100;
 volatile int *portegen = (volatile int *)0xbf886110;
 
 int mytime = 0x5957;
-
+int timeoutcount = 0;
 char textstring[] = "text, more text, and even more text!";
 
 /* Interrupt Service Routine */
 
 void user_isr(void)
 {
+  timeoutcount++;
   if(timeoutcount % 10 == 0)
   {
-  time2string(textstring,mytime);
-  display_string(3, textstring);
-  display_update();
-  tick(&mytime);
+    time2string(textstring,mytime);
+    display_string(3, textstring);
+    display_update();
+    tick(&mytime);
   }
   if (IFS(0) & 0x100) // If flag of timer 2 raised, reset flag. assignment 3e.
   {
@@ -53,19 +53,7 @@ void labinit(void)
 
   TRISD = TRISD | 0x00000fe0; // Sätter bit 11-5 som 1, dvs input.
 
-  //T2CON = 0x70;
 
-  TMR2 = 0;
-
-  IEC(0) = (1 << 8);
-  IPC(2) = 4;
-  // enable_interrupt();
-
-  //PR2 = 31250;     // Sätter delayen korrekt (31250 * 256 = 8 000 000) 
-  T2CON |= 0x8000; // Starts the timer
-
-  // void delay(int);
-  // void time2string( char *, int );
   return;
 }
 
