@@ -30,29 +30,34 @@ char textstring[] = "text, more text, and even more text!";
 
 void user_isr(void)
 {
+  
   timeoutcount++;
-  if(timeoutcount % 10 == 0)
+  
+  if (IFS(0) & 0x100) // If flag of timer 2 raised, reset flag. assignment 3e.
+  {
+  if(timeoutcount <= 10)
   {
     time2string(textstring,mytime);
     display_string(3, textstring);
     display_update();
     tick(&mytime);
+    timeoutcount = 0;
   }
-  if (IFS(0) & 0x100) // If flag of timer 2 raised, reset flag. assignment 3e.
-  {
-  IFSCLR(0x100); // Code to reset flag
+    IFSCLR(0x100); // Code to reset flag
   }
+  
+  return;
 
 }
 
 /* Lab-specific initialization goes here */
 void labinit(void)
 {
+
   timer();
   *trisegen = *trisegen & 0xffffff00; // Egen TRISE, sätter till output
 
   TRISD = TRISD | 0x00000fe0; // Sätter bit 11-5 som 1, dvs input.
-
 
   return;
 }
@@ -60,18 +65,14 @@ void labinit(void)
 void timer(void)
 {
   T2CON = 0x70;
-  /*T2CON |= 0xC000;
-  T2CON |= 0x4;*/
   TMR2 = 0;
 
   IEC(0) = (1 << 8);
   IPC(2) = 4;
-  // enable_interrupt();
 
   PR2 = 31250;     // Sätter delayen korrekt (31250 * 256 = 8 000 000) 
   T2CON |= 0x8000; // Starts the timer
 }
-int num = 0x000000;
 
 /* This function is called repetitively from the main program */
 void labwork(void)

@@ -25,8 +25,10 @@
   #
 enable_interrupt:
 	
-	 ei
-	 j $ra
+	ei
+	nop
+	j $ra
+	nop
 
 hexasc:
 	 # Ska & 0xf med a0 för att endast få 4 lsb
