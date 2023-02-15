@@ -23,6 +23,12 @@
   #
   # Please add your own code below this line
   #
+
+enable_interrupt:
+	
+	 ei
+	 j $ra
+
 hexasc:
 	 # Ska & 0xf med a0 för att endast få 4 lsb
 	add $t4, $a0, $0 	# takes in a3 as argument, copies it to temp (move better?)

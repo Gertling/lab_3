@@ -17,6 +17,9 @@
 #include <pic32mx.h> /* Declarations of system-specific addresses etc */
 #include "mipslab.h" /* Declatations for these labs */
 
+int prime = 1234567;
+int timeoutcount = 0;
+
 volatile int *trisegen = (volatile int *)0xbf886100;
 volatile int *portegen = (volatile int *)0xbf886110;
 
@@ -28,7 +31,18 @@ char textstring[] = "text, more text, and even more text!";
 
 void user_isr(void)
 {
-  return;
+  if(timeoutcount % 10 == 0)
+  {
+  time2string(textstring,mytime);
+  display_string(3, textstring);
+  display_update();
+  tick(&mytime);
+  }
+  if (IFS(0) & 0x100) // If flag of timer 2 raised, reset flag. assignment 3e.
+  {
+  IFSCLR(0x100); // Code to reset flag
+  }
+
 }
 
 /* Lab-specific initialization goes here */
@@ -38,6 +52,17 @@ void labinit(void)
   *trisegen = *trisegen & 0xffffff00; // Egen TRISE, sätter till output
 
   TRISD = TRISD | 0x00000fe0; // Sätter bit 11-5 som 1, dvs input.
+
+  //T2CON = 0x70;
+
+  TMR2 = 0;
+
+  IEC(0) = (1 << 8);
+  IPC(2) = 4;
+  // enable_interrupt();
+
+  //PR2 = 31250;     // Sätter delayen korrekt (31250 * 256 = 8 000 000) 
+  T2CON |= 0x8000; // Starts the timer
 
   // void delay(int);
   // void time2string( char *, int );
@@ -63,57 +88,8 @@ int num = 0x000000;
 /* This function is called repetitively from the main program */
 void labwork(void)
 {
-  int counter = 0;
-  // delay( 1000 );
-  int i = 0;
+  prime = nextprime(prime);
+  display_string(0, itoaconv(prime));
+  display_update();
 
-  if (IFS(0) & 0x100)
-  {
-    static counter2 = 0;
-    IFS(0) = 0;
-    TMR2 = 0;
-    if(counter2 == 10)
-    {
-      counter2 = 0;
-    time2string(textstring, mytime);
-    display_string(3, textstring);
-    display_update();
-    tick(&mytime);
-    
-    if (num < 256)
-    {
-      *portegen += 1;
-    }
-    else
-    {
-      //*portegen = *portegen & 0xffffff00;
-      num = 0;
-    }
-    }
-    counter2++;
-  }
-
-  if (getbtns())
-  {
-    if (getbtns() & 0x1)
-    {
-      mytime = (mytime & 0xff0f) | getsw() << 4;
-    }
-    if (getbtns() & 0x2)
-    {
-      mytime = (mytime & 0xf0ff) | getsw() << 8;
-    }
-    if (getbtns() & 0x4)
-    {
-      mytime = (mytime & 0x0fff) | getsw() << 12;
-    }
-  }
-
-  /*
-   if(BTN2 | BTN3 | BTN4)
-    {
-      mytime = (SW1<<3) | (SW2<<2) | (SW3<<1) | SW4;
-    }
-  */
-  display_image(96, icon);
 }
