@@ -31,18 +31,16 @@ char textstring[] = "text, more text, and even more text!";
 
 void user_isr(void)
 {
-  if (IFS(0) & 0x100){
-  
-  
+
   timeoutcount++;
-  TMR2 = 0; // Verkar inte spela någon som helst roll.
+  
   //IFSCLR(0);
 
   if (IFS(0) & 0x100) // If flag of timer 2 raised, reset flag. assignment 3e.
   {
     IFS(0) = 0; // Code to reset flag
     
-    if(timeoutcount >= 10)
+    if(timeoutcount >= 10) // >= eftersom att där kan förekommande andra interrupts som inte ska påverka, fast checkar redan!
     {
       time2string(textstring,mytime);
       display_string(3, textstring);
@@ -54,8 +52,7 @@ void user_isr(void)
     }
 
   }
-
-  }
+  TMR2 = 0; // Verkar inte spela någon som helst roll.
   IFS(0) = 0;
   return;
 }
