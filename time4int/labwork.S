@@ -10,6 +10,7 @@
 
 .global delay # Måste det läggas till här eller i slutet av fil enligt instruktion? 
 .global time2string # Måste det läggas till här eller i slutet av fil enligt instruktion? 
+.global enable_interrupt
 
 .macro	PUSH reg
 	addi	$sp,$sp,-4
@@ -25,9 +26,9 @@
   #
 enable_interrupt:
 	
-	ei
+	ei 
 	nop
-	j $ra
+	jr $ra
 	nop
 
 hexasc:

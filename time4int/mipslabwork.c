@@ -19,35 +19,45 @@
 
 int prime = 1234567;
 
+
 volatile int *trisegen = (volatile int *)0xbf886100;
 volatile int *portegen = (volatile int *)0xbf886110;
 
-int mytime = 0x5957;
-int timeoutcount = 0;
+volatile int mytime = 0x5957;
+volatile int timeoutcount = 0;
 char textstring[] = "text, more text, and even more text!";
 
 /* Interrupt Service Routine */
 
 void user_isr(void)
 {
+  if (IFS(0) & 0x100){
+  
   
   timeoutcount++;
-  
+  TMR2 = 0; // Verkar inte spela någon som helst roll.
+  //IFSCLR(0);
+
   if (IFS(0) & 0x100) // If flag of timer 2 raised, reset flag. assignment 3e.
   {
-  if(timeoutcount <= 10)
-  {
-    time2string(textstring,mytime);
-    display_string(3, textstring);
-    display_update();
-    tick(&mytime);
-    timeoutcount = 0;
-  }
-    IFSCLR(0x100); // Code to reset flag
-  }
-  
-  return;
+    IFS(0) = 0; // Code to reset flag
+    
+    if(timeoutcount >= 10)
+    {
+      time2string(textstring,mytime);
+      display_string(3, textstring);
+      display_update();
+      tick(&mytime);
+      
+      timeoutcount = 0;
+    
+    }
 
+  }
+
+  }
+  IFS(0) = 0;
+  return;
 }
 
 /* Lab-specific initialization goes here */
@@ -58,27 +68,33 @@ void labinit(void)
   *trisegen = *trisegen & 0xffffff00; // Egen TRISE, sätter till output
 
   TRISD = TRISD | 0x00000fe0; // Sätter bit 11-5 som 1, dvs input.
+  enable_interrupt(); 
 
   return;
 }
 
 void timer(void)
 {
+  
   T2CON = 0x70;
   TMR2 = 0;
 
-  IEC(0) = (1 << 8);
-  IPC(2) = 4;
+  IEC(0) = (1 << 8); // Interrupt enable control.
+  IPC(2) = 7;
 
   PR2 = 31250;     // Sätter delayen korrekt (31250 * 256 = 8 000 000) 
   T2CON |= 0x8000; // Starts the timer
+  
+  return;
 }
 
 /* This function is called repetitively from the main program */
 void labwork(void)
 {
+  
   prime = nextprime(prime);
   display_string(0, itoaconv(prime));
+  
   display_update();
-
+  
 }
