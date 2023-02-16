@@ -110,11 +110,11 @@ time2string:
 	POP $t4
 	
 	andi $t9, $a1, 0xff
-	beq $t9, $0, addX
 
 	addi $t8, $0, 0x3a    # :
 
-	
+	sb $0, 6($a0)  # Setting nullbyte.
+
 	sb $0, 5($a0)  # Setting nullbyte.
 	sb $t4, 0($a0) # x0:00 
 	sb $t5, 1($a0) # 0x:00
@@ -122,24 +122,6 @@ time2string:
 	sb $t6, 3($a0) # 00:x0
 	sb $t7, 4($a0) # 00:0x
 
-	
-	POP $ra
-	
-	jr $ra
-	nop
-
-	addX:
-	
-	sb $0, 6($a0)  # Setting nullbyte.
-	
-	li $t9, 0x58
-	sb $t9, 5($a0) # X
-	
-	sb $t4, 0($a0) # x0:00 
-	sb $t5, 1($a0) # 0x:00
-	sb $t8, 2($a0) # :
-	sb $t6, 3($a0) # 00:x0
-	sb $t7, 4($a0) # 00:0x
 
 	
 	POP $ra

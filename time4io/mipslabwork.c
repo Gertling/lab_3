@@ -18,8 +18,8 @@
 #include "mipslab.h"  /* Declatations for these labs */
 
 
-volatile int * trisegen = (volatile int *) 0xbf886100;
-volatile int * portegen = (volatile int *) 0xbf886110;
+volatile int * trise_egen = (volatile int *) 0xbf886100;
+volatile int * porte_egen = (volatile int *) 0xbf886110;
 
 int mytime = 0x5957;
 
@@ -36,7 +36,7 @@ void user_isr( void )
 void labinit( void )
 {
 
-  *trisegen = *trisegen & 0xffffff00; // Egen TRISE, sätter till output
+  *trise_egen = *trise_egen & 0xffffff00; // Egen TRISE, sätter till output
 
   TRISD = TRISD | 0x00000fe0; // Sätter bit 11-5 som 1, dvs input.
   
@@ -58,11 +58,11 @@ void labwork( void )
   tick( &mytime );
   if(num < 256)
   {
-    *portegen += 1;
+    *porte_egen += 1;
   }
   else
   {
-    *portegen = *portegen & 0xffffff00;
+    *porte_egen = *porte_egen & 0xffffff00;
     num = 0;
   }
 

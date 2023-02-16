@@ -46,7 +46,7 @@ void labinit(void)
 
 void timer(void)
 {
-  T2CON = 0x70;
+  T2CON = 0x70; // Pre-scale
   /*T2CON |= 0xC000;
   T2CON |= 0x4;*/
   TMR2 = 0;
@@ -55,7 +55,7 @@ void timer(void)
   IPC(2) = 4;
   // enable_interrupt();
 
-  PR2 = 31250;     // Sätter delayen korrekt (31250 * 256 = 8 000 000) 
+  PR2 = 31250;     // Sätter delayen korrekt (31250 * 256 = 8 000 000) Räknar med pre-scale
   T2CON |= 0x8000; // Starts the timer
 }
 int num = 0x000000;
@@ -71,8 +71,8 @@ void labwork(void)
   if (IFS(0) & 0x100)
   {
     
-    IFS(0) = 0;
-    TMR2 = 0;
+    IFS(0) = 0; // Reset timeout flag.
+    TMR2 = 0;  // Reset cause of timeout. DOES THE RASING OF THE FLAG RESET TMR2 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
     if(timeoutcount == 10)
     {
       timeoutcount = 0;

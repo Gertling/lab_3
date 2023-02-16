@@ -38,7 +38,7 @@ void user_isr(void)
 
   if (IFS(0) & 0x100) // If flag of timer 2 raised, reset flag. assignment 3e.
   {
-    IFS(0) = 0; // Code to reset flag
+    IFS(0) = 0; // Code to reset flag. The sooner the better. Source: Trust me bro.
     
     if(timeoutcount >= 10) // >= eftersom att där kan förekommande andra interrupts som inte ska påverka, fast checkar redan!
     {
@@ -52,8 +52,7 @@ void user_isr(void)
     }
 
   }
-  TMR2 = 0; // Verkar inte spela någon som helst roll.
-  IFS(0) = 0;
+  IFS(0) = 0; // Since there could be other flags raised.
   return;
 }
 
@@ -65,7 +64,7 @@ void labinit(void)
   *trisegen = *trisegen & 0xffffff00; // Egen TRISE, sätter till output
 
   TRISD = TRISD | 0x00000fe0; // Sätter bit 11-5 som 1, dvs input.
-  enable_interrupt(); 
+  enable_interrupt();  // To enable global interrupts.
 
   return;
 }
@@ -91,7 +90,6 @@ void labwork(void)
   
   prime = nextprime(prime);
   display_string(0, itoaconv(prime));
-  
   display_update();
   
 }
