@@ -322,3 +322,4 @@ char * itoaconv( int num )
    * we must add 1 in order to return a pointer to the first occupied position. */
   return( &itoa_buffer[ i + 1 ] );
 }
+
